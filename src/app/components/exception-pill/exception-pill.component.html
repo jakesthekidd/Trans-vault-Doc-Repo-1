@@ -1,0 +1,8 @@
+<span class="exception-pill" [ngClass]="'variant-' + variant">
+  <img
+    class="pill-icon"
+    [src]="variant === 'hold' ? 'icons/document-hold.svg' : 'icons/exception.svg'"
+    [alt]="variant === 'hold' ? 'Document Hold' : 'Exception'"
+  />
+  <span class="pill-label">{{ label }}</span>
+</span>

@@ -1,0 +1,434 @@
+.results-card {
+  width: 100%;
+  margin-top: 0;
+  background-color: #fff;
+  border-radius: 0;
+  box-shadow: none !important;
+  border: none;
+}
+
+// Pill cells (Exceptions / Document Holds columns) — wrapper inside the
+// <td> so multiple pills wrap with a gap. The wrapping <td> uses min-height
+// so the row grows to fit all pills.
+.pill-cell {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+  width: 100%;
+}
+
+// Top Toolbar
+.top-toolbar {
+  background-color: #e6e8eb !important;
+  color: #333 !important;
+  height: 48px;
+  min-height: 48px;
+  font-size: 14px;
+  border-bottom: 1px solid #ccc;
+  padding: 0 10px;
+
+  .breadcrumbs {
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+    color: #666;
+
+    .crumb-link {
+      color: #2c95dd;
+      cursor: pointer;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+
+    .crumb-current {
+      color: #222;
+    }
+
+    .crumb-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+      margin: 0 5px;
+      color: #888;
+    }
+  }
+
+  .top-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    .search-box {
+      display: flex;
+      align-items: center;
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 2px;
+      padding: 0 5px;
+      height: 30px;
+
+      mat-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+        color: #888;
+        margin-right: 5px;
+      }
+
+      input {
+        border: none;
+        outline: none;
+        font-size: 13px;
+        width: 150px;
+      }
+    }
+  }
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+// Industrial Action Bar Styling
+.industrial-action-bar {
+  display: flex;
+  gap: 8px;
+  padding: 10px 15px;
+  background-color: #f7f9fb;
+  border-bottom: 1px solid #d1d9e4;
+
+  .ax-bar-btn {
+    height: 30px;
+    font-size: 13px;
+    font-weight: 500;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 0 12px;
+
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+
+    &.mat-primary {
+      background-color: #2c95dd !important;
+    }
+
+    &.mat-mdc-outlined-button {
+      border-color: #2c95dd !important;
+      color: #2c95dd !important;
+    }
+  }
+}
+
+// Filter Row Styling
+.filter-header-row {
+  height: 36px !important;
+  background-color: #f0f4f8 !important; // Light blue-ish like screenshot
+
+  th.mat-mdc-header-cell {
+    padding: 0 8px !important;
+    border-bottom: 1px solid #ccc !important;
+  }
+}
+
+.filter-input-wrapper {
+  display: flex;
+  align-items: center;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 2px;
+  height: 24px;
+  padding: 0 4px;
+  width: 100%;
+  box-sizing: border-box;
+
+  .filter-prefix {
+    font-size: 12px;
+    color: #888;
+    margin-right: 2px;
+    user-select: none;
+  }
+
+  .filter-input {
+    border: none;
+    outline: none;
+    font-size: 12px;
+    width: 100%;
+    background: transparent;
+    color: #333;
+  }
+
+  .filter-clear {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+    color: #999;
+    cursor: pointer;
+
+    &:hover {
+      color: #666;
+    }
+  }
+}
+
+// Table
+.results-table {
+  width: 100%;
+
+  th.mat-mdc-header-cell {
+    font-size: 11px !important;
+    text-transform: uppercase;
+    white-space: nowrap;
+    padding: 0 10px !important;
+    height: 40px !important;
+
+    // Override global blue header for this specific table
+    background-color: #fff !important;
+    color: #666 !important;
+    border-bottom: 2px solid #ddd !important;
+
+    .header-content {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .header-icon-pre {
+      font-size: 14px;
+      width: 14px;
+      height: 14px;
+      color: #999; // Grey icon on white background
+      cursor: pointer;
+
+      &:hover {
+        color: #2c95dd; // Highlight on hover to show clickability
+      }
+    }
+
+    .header-icon-post {
+      font-size: 14px;
+      width: 14px;
+      height: 14px;
+      color: #ccc;
+    }
+  }
+
+  td.mat-mdc-cell {
+    font-size: 12px !important;
+    padding: 6px 10px !important;
+    border-bottom: 1px solid #eee !important;
+    color: #333 !important;
+    // Allow rows to grow with their tallest cell (e.g. wrapped pills) while
+    // keeping the original visual rhythm for single-line cells.
+    min-height: 36px !important;
+    height: auto !important;
+    vertical-align: middle;
+  }
+
+  // Pill columns — wider and allow wrapping. Class names are emitted by
+  // mat-table automatically (mat-column-<columnDef>).
+  .mat-column-exceptions {
+    min-width: 440px;
+    width: 480px;
+  }
+
+  .mat-column-documentHolds {
+    min-width: 220px;
+    width: 240px;
+  }
+
+  tr.mat-mdc-row:hover {
+    background-color: #f5f5f5 !important;
+  }
+
+  // Selection Background Color Fixed
+  tr.mat-mdc-row.selected {
+    background-color: #e1f5fe !important; // Light Blue like Screenshot
+  }
+}
+
+// Checkbox Color Fixed (No Orange)
+::v-deep .mat-mdc-checkbox.mat-primary {
+  --mdc-checkbox-selected-focus-icon-color: #2c95dd;
+  --mdc-checkbox-selected-hover-icon-color: #2c95dd;
+  --mdc-checkbox-selected-icon-color: #2c95dd;
+  --mdc-checkbox-selected-focus-state-layer-color: #2c95dd;
+  --mdc-checkbox-selected-hover-state-layer-color: #2c95dd;
+  --mdc-checkbox-selected-pressed-state-layer-color: #2c95dd;
+}
+
+.doc-icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2px; // Align icons with text baseline
+}
+
+.doc-icon {
+  font-size: 18px;
+  color: #666;
+  width: 18px;
+  height: 18px;
+}
+
+.row-menu-btn {
+  width: 24px;
+  height: 24px;
+  line-height: normal;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2px; // Align menu button with text baseline
+
+  mat-icon {
+    font-size: 20px;
+    color: #2c95dd;
+  }
+}
+
+// Center align the actions column cells
+.mat-column-actions {
+  text-align: center !important;
+  justify-content: center !important;
+}
+
+// Results Footer
+.results-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 10px;
+  background-color: #f7f7f7; // Very light grey footer
+  border-top: 1px solid #ccc;
+  font-size: 11px;
+  color: #555;
+  height: 32px;
+
+  .docs-count {
+    font-weight: normal;
+  }
+
+  .custom-pager {
+    display: flex;
+    align-items: center;
+    gap: 0;
+
+    .pager-btn {
+      background: none;
+      border: none;
+      color: #2c95dd;
+      font-size: 11px;
+      font-weight: bold;
+      cursor: pointer;
+      padding: 0 5px;
+      display: flex;
+      align-items: center;
+
+      &:disabled {
+        color: #ccc;
+        cursor: default;
+      }
+
+      .tri {
+        font-size: 10px;
+        margin: 0 3px;
+      }
+    }
+
+    .pager-sep {
+      color: #ccc;
+      margin: 0 8px;
+    }
+
+    .page-num {
+      color: #333;
+      font-weight: bold;
+    }
+
+    .items-label {
+      margin-left: 15px;
+      margin-right: 8px;
+      color: #555;
+    }
+
+    .page-size-select {
+      height: 24px;
+      border: 1px solid #ccc;
+      border-radius: 2px;
+      padding: 0 4px;
+      font-size: 11px;
+      color: #333;
+      background: #fff;
+    }
+  }
+}
+
+// Thumbnail Overlay
+.thumbnail-overlay {
+  position: fixed;
+  z-index: 9999;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  width: 300px;
+  height: 400px;
+  pointer-events: none;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .thumbnail-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    background-color: #fff;
+    overflow: hidden;
+
+    .thumb-img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      animation: fadeIn 0.3s ease-in;
+    }
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.table-container {
+  overflow-x: auto;
+  position: relative; // For loading overlay
+  min-height: 200px;
+}
+
+.table-loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.7);
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

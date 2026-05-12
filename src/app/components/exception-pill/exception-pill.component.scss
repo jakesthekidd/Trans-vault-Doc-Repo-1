@@ -1,0 +1,35 @@
+.exception-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px 2px 6px;
+  border-radius: 999px;
+  font-size: 12px;
+  line-height: 18px;
+  font-weight: 500;
+  white-space: nowrap;
+  max-width: 100%;
+
+  // SVG icon — provided assets carry their own fill, so we just size it.
+  .pill-icon {
+    width: 12px;
+    height: 12px;
+    flex: 0 0 auto;
+    display: block;
+  }
+
+  .pill-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &.variant-exception {
+    background-color: #fdece0; // light orange
+    color: #8a3b00;
+  }
+
+  &.variant-hold {
+    background-color: #e6e8eb; // light gray
+    color: #2b313a;
+  }
+}

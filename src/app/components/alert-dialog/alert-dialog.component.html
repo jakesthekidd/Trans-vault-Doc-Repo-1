@@ -1,0 +1,21 @@
+<div class="alert-dialog-container">
+    <div class="dialog-header">
+        <span class="header-text">{{ data.title }}</span>
+        <button class="close-btn" (click)="onClose()">
+            <mat-icon>cancel</mat-icon>
+        </button>
+    </div>
+
+    <div class="dialog-content">
+        <div class="message-row">
+            <div class="icon-wrapper">
+                <mat-icon class="info-icon">info</mat-icon>
+            </div>
+            <span class="message-text">{{ data.message }}</span>
+        </div>
+    </div>
+
+    <div class="dialog-footer">
+        <button class="footer-btn ok" (click)="onClose()">OK</button>
+    </div>
+</div>

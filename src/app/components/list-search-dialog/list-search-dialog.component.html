@@ -1,0 +1,72 @@
+<div class="classic-dialog-container">
+  <div class="dialog-header">
+    <span class="header-text">{{ title }}</span>
+  </div>
+
+  <div class="dialog-content">
+
+    <!-- Options-mode: multi-select picker over a predefined list -->
+    <ng-container *ngIf="hasOptions; else freeformMode">
+      <div class="input-section">
+        <label class="classic-label">Filter</label>
+        <input
+          type="text"
+          [(ngModel)]="optionsFilter"
+          class="classic-text-input"
+          placeholder="Type to filter the list..."
+        >
+      </div>
+
+      <div class="options-list">
+        <div *ngFor="let option of filteredOptions" class="option-row">
+          <mat-checkbox
+            [checked]="isChecked(option)"
+            (change)="toggleOption(option, $event.checked)"
+          >
+            {{ option }}
+          </mat-checkbox>
+        </div>
+        <div *ngIf="filteredOptions.length === 0" class="option-empty">
+          No matches.
+        </div>
+      </div>
+
+      <div class="selected-summary">
+        <span>{{ selectedValues.length }} selected</span>
+        <button
+          type="button"
+          class="footer-link-btn"
+          *ngIf="selectedValues.length > 0"
+          (click)="deleteAll()"
+        >CLEAR</button>
+      </div>
+    </ng-container>
+
+    <!-- Freeform-mode: original Add/Replace/Delete behavior -->
+    <ng-template #freeformMode>
+      <div class="input-section">
+        <label class="classic-label">Field Value</label>
+        <input type="text" [(ngModel)]="currentValue" class="classic-text-input">
+      </div>
+
+      <div class="button-group-row">
+        <button class="classic-btn primary" (click)="add()">ADD</button>
+        <button class="classic-btn primary" (click)="replace()">REPLACE</button>
+        <button class="classic-btn primary" (click)="delete()">DELETE</button>
+        <button class="classic-btn primary" (click)="deleteAll()">DELETE ALL</button>
+      </div>
+
+      <div class="list-display-area">
+        <div *ngFor="let item of selectedValues" class="list-row">
+          {{ item }}
+        </div>
+      </div>
+    </ng-template>
+
+  </div>
+
+  <div class="dialog-footer">
+    <button class="footer-link-btn" (click)="cancel()">CANCEL</button>
+    <button class="classic-btn primary ok-btn" (click)="ok()">OK</button>
+  </div>
+</div>

@@ -1,0 +1,356 @@
+<mat-card class="results-card">
+  <!-- Top Toolbar: Title, Search, Settings -->
+  <mat-toolbar class="top-toolbar">
+    <div class="breadcrumbs">
+      <span class="crumb-link" (click)="goToSearch()">New Search</span>
+      <mat-icon class="crumb-icon">chevron_right</mat-icon>
+      <span class="crumb-current">Query Results</span>
+    </div>
+
+    <span class="spacer"></span>
+
+    <div class="top-actions">
+      <div class="search-box">
+        <mat-icon>search</mat-icon>
+        <input type="text" placeholder="Text Search">
+      </div>
+      <button mat-icon-button (click)="refreshPage()"><mat-icon>refresh</mat-icon></button>
+      <button mat-icon-button (click)="openCustomizeColumns()"><mat-icon>settings</mat-icon></button>
+    </div>
+  </mat-toolbar>
+
+  <!-- Industrial Action Bar: Open, Delete, Export, Print, Email, Submit -->
+  <div class="industrial-action-bar" *ngIf="selection.hasValue()">
+    <button mat-flat-button color="primary" class="ax-bar-btn" (click)="openViewer(selection.selected[0]?.id || 0)"
+      [disabled]="!selection.hasValue()">
+      <mat-icon>visibility</mat-icon> Open
+    </button>
+    <button mat-stroked-button class="ax-bar-btn" (click)="rowDelete(selection.selected[0])"
+      [disabled]="!selection.hasValue()">
+      <mat-icon>delete</mat-icon> Delete
+    </button>
+    <button mat-stroked-button class="ax-bar-btn" [matMenuTriggerFor]="exportMenu" [disabled]="!selection.hasValue()">
+      <mat-icon>exit_to_app</mat-icon> Export <mat-icon>arrow_drop_down</mat-icon>
+    </button>
+    <button mat-stroked-button class="ax-bar-btn" (click)="rowPrint(selection.selected[0])"
+      [disabled]="!selection.hasValue()">
+      <mat-icon>print</mat-icon> Print
+    </button>
+    <button mat-stroked-button class="ax-bar-btn" (click)="emailSelectedDocs()" [disabled]="!selection.hasValue()">
+      <mat-icon>email</mat-icon> Email
+    </button>
+    <button mat-stroked-button class="ax-bar-btn" [matMenuTriggerFor]="submitMenu" [disabled]="!selection.hasValue()">
+      <mat-icon>send</mat-icon> Submit <mat-icon>arrow_drop_down</mat-icon>
+    </button>
+  </div>
+
+  <mat-menu #submitMenu="matMenu">
+    <button mat-menu-item (click)="rowSubmitOcr(selection.selected[0])">To OCR</button>
+    <button mat-menu-item>To ERP</button>
+  </mat-menu>
+
+  <mat-menu #exportMenu="matMenu">
+    <button mat-menu-item (click)="exportIndexToCsv()">From Index to CSV</button>
+    <button mat-menu-item (click)="exportSelectedDocs()">Selected Docs</button>
+  </mat-menu>
+
+  <div *ngIf="!showThumbnails; else thumbnailView" class="table-container">
+    <div class="table-loading-overlay" *ngIf="isLoading">
+      <mat-spinner diameter="50"></mat-spinner>
+    </div>
+    <table mat-table [dataSource]="dataSource" matSort class="results-table">
+
+      <!-- Checkbox Column -->
+      <ng-container matColumnDef="select">
+        <th mat-header-cell *matHeaderCellDef>
+          <mat-checkbox (change)="$event ? masterToggle() : null" [checked]="selection.hasValue() && isAllSelected()">
+          </mat-checkbox>
+        </th>
+        <td mat-cell *matCellDef="let row">
+          <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(row) : null"
+            [checked]="selection.isSelected(row)">
+          </mat-checkbox>
+        </td>
+      </ng-container>
+
+      <!-- View Icon Column -->
+      <ng-container matColumnDef="view">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let row" class="icon-cell">
+          <div class="doc-icon-wrapper" (mouseenter)="showThumbnail($event, row)" (mouseleave)="hideThumbnail()">
+            <mat-icon class="doc-icon">description</mat-icon>
+          </div>
+        </td>
+      </ng-container>
+
+      <!-- Actions Dropdown Column -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let row">
+          <button mat-icon-button [matMenuTriggerFor]="rowMenu" [matMenuTriggerData]="{row: row}" class="row-menu-btn"
+            (click)="$event.stopPropagation()">
+            <mat-icon>arrow_drop_down_circle</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <!-- Dynamic Columns based on Screenshot -->
+      <ng-container matColumnDef="systemJck">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          <div class="header-content">
+            <mat-icon class="header-icon-pre" (click)="toggleFilterRow($event)">search</mat-icon>
+            <span>SYSTEM JCK</span>
+          </div>
+        </th>
+        <td mat-cell *matCellDef="let row">{{ row.systemJck }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="commResults">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>COMM RESULTS</th>
+        <td mat-cell *matCellDef="let row">{{ row.commResults }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="transferredStatus">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          <div class="header-content">
+            <mat-icon class="header-icon-pre" (click)="toggleFilterRow($event)">search</mat-icon>
+            <span>TRANSFLO STATUS</span>
+          </div>
+        </th>
+        <td mat-cell *matCellDef="let row">{{ row.transferredStatus }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="receiptAmount">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>RECEIPT AMOUNT</th>
+        <td mat-cell *matCellDef="let row">{{ row.receiptAmount }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="systemIndex">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          <div class="header-content">
+            <mat-icon class="header-icon-pre" (click)="toggleFilterRow($event)">search</mat-icon>
+            <span>SYSTEM_DCN</span>
+          </div>
+        </th>
+        <td mat-cell *matCellDef="let row">{{ row.systemIndex }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="poNumber">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>PO NUMBER</th>
+        <td mat-cell *matCellDef="let row">{{ row.poNumber }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="refMatch">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>REF_MATCH</th>
+        <td mat-cell *matCellDef="let row">{{ row.refMatch }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="docType">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          <div class="header-content">
+            <mat-icon class="header-icon-pre" (click)="toggleFilterRow($event)">search</mat-icon>
+            <span>DOC TYPE</span>
+            <mat-icon class="header-icon-post">arrow_drop_down</mat-icon>
+          </div>
+        </th>
+        <td mat-cell *matCellDef="let row">{{ row.docType }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="exceptions">
+        <th mat-header-cell *matHeaderCellDef>
+          <div class="header-content">
+            <mat-icon class="header-icon-pre" (click)="toggleFilterRow($event)">search</mat-icon>
+            <span>EXCEPTIONS</span>
+          </div>
+        </th>
+        <td mat-cell *matCellDef="let row">
+          <div class="pill-cell">
+            <app-exception-pill
+              *ngFor="let ex of row.exceptions"
+              variant="exception"
+              [label]="ex"
+            ></app-exception-pill>
+          </div>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="documentHolds">
+        <th mat-header-cell *matHeaderCellDef>
+          <div class="header-content">
+            <mat-icon class="header-icon-pre" (click)="toggleFilterRow($event)">search</mat-icon>
+            <span>DOCUMENT HOLDS</span>
+          </div>
+        </th>
+        <td mat-cell *matCellDef="let row">
+          <div class="pill-cell">
+            <app-exception-pill
+              *ngFor="let hold of row.documentHolds"
+              variant="hold"
+              [label]="hold"
+            ></app-exception-pill>
+          </div>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="loadNumber">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          <div class="header-content">
+            <mat-icon class="header-icon-pre" (click)="toggleFilterRow($event)">search</mat-icon>
+            <span>LOAD NUMBER</span>
+          </div>
+        </th>
+        <td mat-cell *matCellDef="let row">{{ row.loadNumber }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="carrierInvoice">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>CARRIER INVOICE</th>
+        <td mat-cell *matCellDef="let row">{{ row.carrierInvoice }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="invoiceNumber">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          <div class="header-content">
+            <mat-icon class="header-icon-pre" (click)="toggleFilterRow($event)">search</mat-icon>
+            <span>INVOICE NUMBER</span>
+          </div>
+        </th>
+        <td mat-cell *matCellDef="let row">{{ row.invoiceNumber }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="invoiceDate">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          <div class="header-content">
+            <mat-icon class="header-icon-pre" (click)="toggleFilterRow($event)">search</mat-icon>
+            <span>INVOICE DATE</span>
+          </div>
+        </th>
+        <td mat-cell *matCellDef="let row">{{ row.invoiceDate }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="invoiceAmount">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          <div class="header-content">
+            <mat-icon class="header-icon-pre" (click)="toggleFilterRow($event)">search</mat-icon>
+            <span>INVOICE AMOUNT</span>
+          </div>
+        </th>
+        <td mat-cell *matCellDef="let row">{{ row.invoiceAmount }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="carrierName">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          <div class="header-content">
+            <mat-icon class="header-icon-pre" (click)="toggleFilterRow($event)">search</mat-icon>
+            <span>CARRIER NAME</span>
+          </div>
+        </th>
+        <td mat-cell *matCellDef="let row">{{ row.carrierName }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>STATUS</th>
+        <td mat-cell *matCellDef="let row">
+          <span [ngClass]="row.status?.toLowerCase()">{{ row.status }}</span>
+        </td>
+      </ng-container>
+
+      <!-- Filter Row Cells -->
+      <ng-container matColumnDef="select_filter">
+        <th mat-header-cell *matHeaderCellDef></th>
+      </ng-container>
+      <ng-container matColumnDef="view_filter">
+        <th mat-header-cell *matHeaderCellDef></th>
+      </ng-container>
+      <ng-container matColumnDef="actions_filter">
+        <th mat-header-cell *matHeaderCellDef></th>
+      </ng-container>
+
+      <ng-container *ngFor="let col of displayedColumns.slice(3)" [matColumnDef]="col + '_filter'">
+        <th mat-header-cell *matHeaderCellDef>
+          <div class="filter-input-wrapper" [matTooltip]="operatorsTooltip">
+            <span class="filter-prefix">=</span>
+            <input class="filter-input" [(ngModel)]="columnFilters[col]" (keyup.enter)="applyFilters()">
+            <mat-icon *ngIf="columnFilters[col]" class="filter-clear"
+              (click)="columnFilters[col]=''; applyFilters()">close</mat-icon>
+          </div>
+        </th>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-header-row *matHeaderRowDef="filterColumns" class="filter-header-row" [hidden]="!filterRowVisible"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="openViewer(row.id)" class="clickable-row"
+        [class.selected]="selection.isSelected(row)">
+      </tr>
+    </table>
+
+    <div class="results-footer">
+      <div class="docs-count">
+        Documents {{getStart()}} - {{getEnd()}} of {{dataSource.data.length}}
+      </div>
+
+      <div class="custom-pager">
+        <button class="pager-btn" (click)="previousPage()" [disabled]="!(paginator?.hasPreviousPage() ?? false)">
+          <span class="tri">◀</span> Previous
+        </button>
+        <span class="pager-sep">|</span>
+        <span class="page-num">{{ (paginator?.pageIndex ?? 0) + 1 }}</span>
+        <span class="pager-sep">|</span>
+        <button class="pager-btn" (click)="nextPage()" [disabled]="!(paginator?.hasNextPage() ?? false)">
+          Next <span class="tri">▶</span>
+        </button>
+        <span class="items-label">Items per page:</span>
+        <select class="page-size-select" (change)="pageSizeChanged($event)">
+          <option *ngFor="let size of [10, 25, 50, 100, 500]" [value]="size" [selected]="paginator?.pageSize === size">
+            {{size}}</option>
+        </select>
+      </div>
+
+      <mat-paginator #paginator [pageSizeOptions]="[10, 25, 50, 100, 500]" style="display: none;"></mat-paginator>
+    </div>
+  </div>
+
+  <ng-template #thumbnailView>
+    <div class="thumbnail-grid">
+      <div *ngFor="let doc of dataSource.filteredData" class="thumbnail-item" (click)="openViewer(doc.id)">
+        <div class="thumbnail-placeholder">
+          <mat-icon>picture_as_pdf</mat-icon>
+          <div class="doc-info">
+            <div>{{ doc.docNumber || 'N/A' }}</div>
+            <small>{{ doc.invoiceNumber || 'N/A' }} • {{ doc.invoiceDate || 'N/A' }}</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+
+  <!-- Row Menu -->
+  <mat-menu #rowMenu="matMenu">
+    <ng-template matMenuContent let-row="row">
+      <button mat-menu-item (click)="rowOpen(row)">
+        <mat-icon>visibility</mat-icon> Open
+      </button>
+      <button mat-menu-item (click)="rowPrint(row)">
+        <mat-icon>print</mat-icon> Print
+      </button>
+      <button mat-menu-item (click)="rowEmail(row)">
+        <mat-icon>email</mat-icon> Email
+      </button>
+      <button mat-menu-item (click)="rowExportCold(row)">
+        <mat-icon>exit_to_app</mat-icon> Export COLD
+      </button>
+      <button mat-menu-item (click)="rowSubmitOcr(row)">
+        <mat-icon>text_snippet</mat-icon> Submit OCR Job
+      </button>
+      <button mat-menu-item (click)="rowAdHoc(row)">
+        <mat-icon>search</mat-icon> Ad Hoc Text Search
+      </button>
+    </ng-template>
+  </mat-menu>
+</mat-card>
+
+<div class="thumbnail-overlay" *ngIf="hoveredRow" [style.top]="thumbTop" [style.left]="thumbLeft">
+  <div class="thumbnail-content">
+    <mat-spinner *ngIf="thumbLoading" diameter="40"></mat-spinner>
+    <img *ngIf="!thumbLoading" [src]="sampleThumbUrl" alt="Thumbnail" class="thumb-img">
+  </div>
+</div>

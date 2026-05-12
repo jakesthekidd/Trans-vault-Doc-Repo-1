@@ -1,0 +1,181 @@
+<div class="viewer-full-layout" [class.is-resizing]="isResizing">
+  <!-- Left Side: Header stack + Viewport -->
+  <div class="left-section">
+    <!-- Row 1: Main Header (Breadcrumbs + Actions) -->
+    <header class="top-nav-row">
+      <div class="breadcrumb-nav">
+        <span class="v-link" (click)="goToSearch()">New Search</span>
+        <mat-icon class="v-sep">chevron_right</mat-icon>
+        <span class="v-id-current">{{ docId }}</span>
+      </div>
+
+      <div class="header-right-actions">
+        <!-- Search is now in the top row -->
+        <div class="v2-search-box">
+          <mat-icon>search</mat-icon>
+          <input type="text" placeholder="Text Search">
+        </div>
+
+        <div class="utility-toolbar">
+          <button class="util-item"><mat-icon>email</mat-icon> EMAIL</button>
+          <button class="util-item"><mat-icon>exit_to_app</mat-icon> EXPORT</button>
+          <button class="util-item"><mat-icon>print</mat-icon> PRINT</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Row 2: Sub-Menu Bar -->
+    <div class="ribbon-sub-menu" *ngIf="showSubMenu">
+      <button mat-button class="mini-menu" [matMenuTriggerFor]="docMenu">Document</button>
+      <button mat-button class="mini-menu" [matMenuTriggerFor]="pageMenu">Page</button>
+      <mat-menu #docMenu="matMenu"><button mat-menu-item>Save</button></mat-menu>
+      <mat-menu #pageMenu="matMenu"><button mat-menu-item>Go to...</button></mat-menu>
+    </div>
+
+    <!-- Row 3: Command Ribbon -->
+    <div class="command-ribbon-layout">
+      <!-- Center: Grouped Tools -->
+      <div class="tools-ribbon">
+        <div class="t-group-box">
+          <label>Page</label>
+          <div class="t-inner">
+            <button class="t-btn" (click)="firstPage()" [disabled]="currentPage === 1">
+              <mat-icon>first_page</mat-icon>
+            </button>
+            <button class="t-btn" (click)="prevPage()" [disabled]="currentPage === 1">
+              <mat-icon>chevron_left</mat-icon>
+            </button>
+            <div class="t-page-input">
+              <input type="text" [value]="currentPage" (change)="goToPage($any($event.target).value)">
+              / {{ totalPages }}
+            </div>
+            <button class="t-btn" (click)="nextPage()" [disabled]="currentPage === totalPages">
+              <mat-icon>chevron_right</mat-icon>
+            </button>
+            <button class="t-btn" (click)="lastPage()" [disabled]="currentPage === totalPages">
+              <mat-icon>last_page</mat-icon>
+            </button>
+          </div>
+        </div>
+
+        <div class="t-group-box">
+          <label>Rotate</label>
+          <div class="t-inner">
+            <button class="t-btn" (click)="rotate(-90)"><mat-icon>rotate_left</mat-icon></button>
+            <button class="t-btn" (click)="rotate(90)"><mat-icon>rotate_right</mat-icon></button>
+          </div>
+        </div>
+
+        <div class="t-group-box">
+          <label>Zoom</label>
+          <div class="t-inner">
+            <span class="t-zoom-val">{{ Math.round(zoom * 100) }}%</span>
+            <button class="t-btn" (click)="zoom = zoom - 0.1" [disabled]="zoom <= 0.2"
+              title="Zoom Out"><mat-icon>remove</mat-icon></button>
+            <mat-slider class="t-zoom-slider" min="0.5" max="3" step="0.1"><input matSliderThumb
+                [(ngModel)]="zoom"></mat-slider>
+            <button class="t-btn" (click)="zoom = zoom + 0.1" title="Zoom In"><mat-icon>add</mat-icon></button>
+
+            <button class="t-btn" (click)="fitWidth()" title="Fit Width"><mat-icon>swap_horiz</mat-icon></button>
+            <button class="t-btn" (click)="fitHeight()" title="Fit Height"><mat-icon>swap_vert</mat-icon></button>
+            <button class="t-btn" (click)="fitToView()" title="Fit to View"><mat-icon>zoom_out_map</mat-icon></button>
+            <button class="t-btn" (click)="togglePanMode()" [class.active]="isPanMode" title="Pan Mode">
+              <mat-icon>back_hand</mat-icon>
+            </button>
+          </div>
+        </div>
+
+        <div class="t-group-box" *ngIf="showAnnotationTools">
+          <label>Annotation</label>
+          <div class="t-inner">
+            <button class="t-btn"><mat-icon>near_me</mat-icon></button>
+            <button class="t-btn active"><mat-icon>edit</mat-icon></button>
+            <button class="t-btn"><mat-icon>crop_3_2</mat-icon></button>
+            <button class="t-btn"><mat-icon>radio_button_unchecked</mat-icon></button>
+            <button class="t-btn"><mat-icon>text_format</mat-icon></button>
+            <button class="t-btn"><mat-icon>history_edu</mat-icon></button>
+            <button class="t-btn"><mat-icon>sticky_note_2</mat-icon></button>
+            <button class="t-btn"><mat-icon>face</mat-icon></button>
+          </div>
+        </div>
+
+        <div class="t-group-box" *ngIf="showFormatTools">
+          <label>Format</label>
+          <div class="t-inner">
+            <button class="t-btn"><mat-icon>brush</mat-icon></button>
+            <button class="t-btn"><mat-icon>format_color_text</mat-icon></button>
+            <button class="t-btn"><mat-icon>format_color_fill</mat-icon></button>
+            <button class="t-btn"><mat-icon>format_strikethrough</mat-icon></button>
+            <button class="t-btn"><mat-icon>star</mat-icon></button>
+            <button class="t-btn"><mat-icon>more_horiz</mat-icon></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Viewport Area -->
+    <main class="viewport-canvas" (mousedown)="onViewportMouseDown($event)" [class.pan-mode]="isPanMode"
+      [class.panning]="isPanning">
+      <!-- Loading Spinner Overlay -->
+      <div class="loading-overlay" *ngIf="isLoading">
+        <mat-spinner diameter="40"></mat-spinner>
+      </div>
+
+      <div class="canvas-scroll-wrap">
+        <div class="canvas-box" [style.transform]="'rotate(' + rotation + 'deg) scale(' + zoom + ')'">
+          <img [src]="imageSrc" class="doc-view-img" alt="Document Page" (load)="onImageLoad()">
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Industrial Splitter / Search Toggle Bar -->
+  <div id="docIndexSplitBar" class="sidebar-resizer" (mousedown)="onResizerMouseDown($event)">
+    <div id="docIndexCollpseBar" class="clickable" (click)="toggleSidebar(); $event.stopPropagation()"
+      (mousedown)="$event.stopPropagation()" title="Toggle Index Panel">
+      <mat-icon>{{ isSidebarOpened ? 'chevron_right' : 'chevron_left' }}</mat-icon>
+    </div>
+  </div>
+
+  <!-- Right Side: Full-height Index Sidebar -->
+  <aside class="index-panel-core" id="indexView" [style.width.px]="isSidebarOpened ? sidebarWidth : 0"
+    [style.display]="isSidebarOpened ? 'flex' : 'none'">
+    <!-- if cannot modify index, use larger panel to show index grid. -->
+    <div id="indexGridContainer" class="index-form-area">
+      <div *ngFor="let field of fields; let i = index" class="row row-no-padding row-spacing">
+        <div class="form-group">
+          <div class="col-xs-12 col-sm-4">
+            <div class="index-field-label">
+              <label class="control-label" [class.required]="field.required">
+                {{ field.label }}
+              </label>
+            </div>
+          </div>
+          <div class="col-xs-12 col-sm-8">
+            <div class="index-field-value">
+              <ng-container *ngIf="!isModifyMode; else modifyInput">
+                <input type="text" [value]="metadata[field.key]" class="form-control" disabled>
+              </ng-container>
+              <ng-template #modifyInput>
+                <input type="text" [(ngModel)]="metadata[field.key]" class="form-control">
+              </ng-template>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="docIndexFooter" class="index-action-footer">
+      <div class="row">
+        <div class="col-xs-12 text-right">
+          <input *ngIf="!isModifyMode" class="btn btn-primary" type="button" value="MODIFY" (click)="toggleModify()">
+
+          <div *ngIf="isModifyMode" class="edit-actions">
+            <input class="btn btn-link" type="button" value="CANCEL" (click)="toggleModify()">
+            <input class="btn btn-primary" type="button" value="SAVE" (click)="toggleModify()">
+          </div>
+        </div>
+      </div>
+    </div>
+  </aside>
+</div>

@@ -1,0 +1,36 @@
+<div class="customize-dialog-container">
+    <div class="dialog-header">
+        <span class="header-text">Customize Query Results</span>
+        <button class="close-btn" (click)="onCancel()">
+            <mat-icon>highlight_off</mat-icon>
+        </button>
+    </div>
+
+    <div class="dialog-content">
+        <div class="header-row">
+            <span class="col-display">Display</span>
+            <span class="col-label">Index Field</span>
+            <div class="action-icons">
+                <mat-icon class="sort-icon" [class.active]="canMoveUp()" (click)="moveUp()">arrow_circle_up</mat-icon>
+                <mat-icon class="sort-icon" [class.active]="canMoveDown()"
+                    (click)="moveDown()">arrow_circle_down</mat-icon>
+            </div>
+        </div>
+
+        <div class="columns-list">
+            <div class="column-item" *ngFor="let col of columns; let i = index" [class.selected]="selectedIndex === i"
+                (click)="selectItem(i)">
+                <div class="checkbox-wrapper">
+                    <mat-checkbox [(ngModel)]="col.visible" color="primary" class="col-checkbox"
+                        (click)="$event.stopPropagation()"></mat-checkbox>
+                </div>
+                <span class="col-name">{{ col.label }}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="dialog-footer">
+        <button class="footer-btn cancel" (click)="onCancel()">CANCEL</button>
+        <button class="footer-btn save" (click)="onSave()">SAVE</button>
+    </div>
+</div>

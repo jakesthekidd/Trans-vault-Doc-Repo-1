@@ -1,0 +1,123 @@
+// Include theming for Angular Material with `mat.theme()`.
+// This Sass mixin will define CSS variables that are used for styling Angular Material
+// components according to the Material 3 design spec.
+// Learn more about theming and how to use it for your application's
+// custom components at https://material.angular.dev/guide/theming
+@use '@angular/material' as mat;
+
+html {
+  @include mat.theme((color: (primary: mat.$azure-palette,
+        tertiary: mat.$blue-palette,
+      ),
+      typography: Roboto,
+      density: 0,
+    ));
+}
+
+body {
+  // Default the application to a light color theme. This can be changed to
+  // `dark` to enable the dark color theme, or to `light dark` to defer to the
+  // user's system settings.
+  color-scheme: light;
+
+  // Set a default background, font and text colors for the application using
+  // Angular Material's system-level CSS variables. Learn more about these
+  // variables at https://material.angular.dev/guide/system-variables
+  background-color: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+  font: var(--mat-sys-body-medium);
+
+  // Reset the user agent margin.
+  margin: 0;
+}
+
+// Import a prebuilt theme (this avoids all custom Sass palette errors)
+@import '@angular/material/prebuilt-themes/indigo-pink.css';
+
+// Global body styles
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  background-color: #f5f5f5;
+}
+
+
+
+// Exact tweaks to match your mockups
+.mat-mdc-card {
+  box-shadow: none !important;
+  border: 1px solid #e0e0e0;
+  background-color: #fafafa;
+}
+
+// Dark blue primary elements (#2c95dd from your screenshots)
+.mat-toolbar.mat-primary {
+  background-color: #2c95dd !important;
+}
+
+.mat-mdc-raised-button,
+.mat-mdc-button.mat-primary,
+.mat-mdc-fab.mat-primary,
+.mat-mdc-mini-fab.mat-primary {
+  background-color: #2c95dd !important;
+  color: white !important;
+}
+
+.mat-mdc-outlined-button {
+  border-color: #2c95dd !important;
+  color: #2c95dd !important;
+}
+
+// Table header (exactly like your results table screenshot)
+.mat-mdc-header-cell {
+  background-color: #2c95dd !important;
+  color: white !important;
+  font-weight: 500;
+}
+
+
+/*styles.scss - Calendar styling */
+.classic-dark-calendar {
+  .mat-datepicker-content {
+    background-color: #fff !important;
+    border-radius: 4px !important;
+    border: 1px solid #ccc !important;
+  }
+
+  .mat-calendar-body-selected {
+    background-color: #2c95dd !important;
+    color: #fff !important;
+  }
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, "Helvetica Neue", sans-serif;
+}
+
+/* Datepicker popup overlay - ensure it appears above content */
+.cdk-overlay-container {
+  z-index: 1000 !important;
+}
+
+.mat-datepicker-popup {
+  z-index: 1001 !important;
+}
+
+.mat-datepicker-content {
+  background-color: #fff !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2) !important;
+}
+
+.text-primary-industrial {
+  color: #2c95dd !important;
+}
+
+.bg-primary-industrial {
+  background-color: #2c95dd !important;
+}

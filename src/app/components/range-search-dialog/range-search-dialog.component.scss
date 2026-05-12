@@ -1,0 +1,151 @@
+.range-dialog-container {
+    background-color: #fff;
+    font-family: Arial, sans-serif; // Changed to Arial to match screenshot better
+    min-width: 450px;
+
+    .dialog-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 15px;
+        background-color: #e6e8eb;
+        border-bottom: 1px solid #ccc;
+
+        .header-text {
+            font-weight: bold;
+            font-size: 15px; // Slightly smaller to match screenshot
+            color: #222;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #555;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            mat-icon {
+                font-size: 22px;
+                width: 22px;
+                height: 22px;
+            }
+        }
+    }
+
+    .dialog-content {
+        background-color: #fff;
+        padding: 20px 20px 30px;
+
+        .field-row {
+            margin-bottom: 15px;
+
+            .field-label {
+                display: block;
+                font-size: 12px; // Smaller label font
+                font-weight: bold;
+                color: #444;
+                margin-bottom: 5px;
+            }
+
+            .custom-select {
+                width: 100%;
+
+                ::v-deep .mat-mdc-text-field-wrapper {
+                    height: 30px; // Compact height
+                    padding: 0 8px;
+                    background-color: #fff;
+                    border: 1px solid #abadb3; // standard input border color
+                    border-radius: 2px; // Sharper corners
+                }
+
+                ::v-deep .mdc-line-ripple {
+                    display: none;
+                }
+
+                ::v-deep .mdc-notched-outline {
+                    display: none;
+                }
+
+                ::v-deep .mat-mdc-form-field-infix {
+                    padding-top: 4px;
+                    min-height: 30px;
+                    width: 100%;
+                }
+
+                ::v-deep .mat-mdc-select-value {
+                    font-size: 13px;
+                }
+
+                ::v-deep .mat-mdc-select-arrow {
+                    margin-top: 4px; // Align arrow
+                }
+            }
+
+            .custom-input {
+                width: 100%;
+                height: 30px; // Compact height
+                padding: 0 8px;
+                border: 1px solid #abadb3;
+                border-radius: 2px; // Sharper corners
+                box-sizing: border-box;
+                font-size: 13px;
+                outline: none;
+
+                &:focus {
+                    border-color: #0078d7; // Windows blue
+                }
+            }
+        }
+    }
+
+    .dialog-footer {
+        padding: 12px 20px;
+        background-color: #e6e8eb;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center; // Vertical alignment
+        gap: 10px;
+        border-top: 1px solid #ccc;
+
+        .footer-btn {
+            min-width: 75px;
+            height: 28px; // Slightly shorter buttons
+            border-radius: 2px; // Sharp buttons
+            font-weight: bold;
+            font-size: 12px;
+            cursor: pointer;
+            border: none;
+
+            &.cancel {
+                background: transparent;
+                color: #333;
+
+                &:hover {
+                    text-decoration: underline;
+                }
+
+                // Link-style hover often seen in these dialogs or just darker bg
+            }
+
+            &.ok {
+                background-color: #002d5a;
+                color: #fff;
+                padding: 0 25px;
+
+                &:hover {
+                    background-color: #003d7a;
+                }
+            }
+        }
+    }
+}
+
+// Override Dialog container styles
+::v-deep .mdc-dialog__surface {
+    padding: 0 !important;
+    border-radius: 4px !important;
+    overflow: hidden !important;
+}
